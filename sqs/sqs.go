@@ -23,6 +23,16 @@ func (self SQSProvider) Read() ([]goku.Message, error) {
 	return msgs, nil
 }
 
+func (self SQSProvider) Write(msgs []goku.Message) error {
+	for _, msg := range msgs {
+		_, err := self.queue.SendMessage(msg.(string))
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func New(q *sqs.Queue) *SQSProvider {
 	provider := &SQSProvider{q}
 	return provider
