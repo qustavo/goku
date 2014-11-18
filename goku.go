@@ -1,6 +1,6 @@
 package goku
 
-type Message string
+type Message interface{}
 
 type Reader interface {
 	Read() (msgs []Message, err error)
@@ -34,13 +34,15 @@ func NewQueue(r Reader, w Writer) *Queue {
 			return
 		}
 
-		msgs, err := r.Read()
-		if err != nil {
-			panic(err)
-		}
+		for {
+			msgs, err := r.Read()
+			if err != nil {
+				panic(err)
+			}
 
-		for _, msg := range msgs {
-			q.out <- msg
+			for _, msg := range msgs {
+				q.out <- msg
+			}
 		}
 
 	}()
